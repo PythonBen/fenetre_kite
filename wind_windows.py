@@ -23,7 +23,7 @@ def perpendicular_vectors(vector):
     return np.array([vector[1], -vector[0]]), np.array([-vector[1], vector[0]])
 
 # create a function to draw a semi circle joining the two arrow of the perpendicular vectors (pink arrows)
-def semi_circle(vect_perp1, vect_perp2):
+def semi_circle(vect_perp1):
     originx, originy = 0, 0
     constant_radius = 20
     #normv1 = np.linalg.norm(vect_perp1)
@@ -40,7 +40,17 @@ def back_limit(boat_vector):
     constant_radius = 20
     normv = np.linalg.norm(boat_vector)
     #normva = np.linalg.norm(apparent_wind)
-    v  = np.array([boat_vector[1], -boat_vector[0]]) * constant_radius / normv
+    if boat_vector[0] > 0:
+        v  = np.array([boat_vector[1], -boat_vector[0]]) * constant_radius / normv
+    elif boat_vector[0] < 0:
+        v  = np.array([-boat_vector[1], boat_vector[0]]) * constant_radius / normv
+    return v
+
+def front_limit(boat_vector, ortho_vect1, ortho_vect2):
+    if boat_vector[0] > 0:
+        v = ortho_vect2 * 20 / np.linalg.norm(ortho_vect2)
+    elif boat_vector[0] < 0:
+        v = ortho_vect1 * 20 / np.linalg.norm(ortho_vect1)
     return v
 
 def plotting(real_wind, boat_vector, ortho1, ortho2, mx, my, back_l, front_l):
@@ -71,7 +81,7 @@ def plotting(real_wind, boat_vector, ortho1, ortho2, mx, my, back_l, front_l):
 real_wind = vectors(270,10)
 print("vent reel")
 print(real_wind)
-boat_vector = vectors(45, 10)
+boat_vector = vectors(0, 10)
 print("vent vitesse")
 print(-boat_vector)
 
@@ -81,8 +91,9 @@ print(app_wind)
 ortho_vect1, ortho_vect2 = perpendicular_vectors(app_wind)
 print(ortho_vect1)
 print(ortho_vect2)
-mx, my = semi_circle(ortho_vect1, ortho_vect2)
+mx, my = semi_circle(ortho_vect1)
 back_l = back_limit(boat_vector)
-front_l = ortho_vect2 * 20 / np.linalg.norm(ortho_vect2)
+front_l = front_limit(boat_vector, ortho_vect1, ortho_vect2)
+#front_l = ortho_vect2 * 20 / np.linalg.norm(ortho_vect2)
 plotting(real_wind, boat_vector, ortho_vect1, ortho_vect2, mx, my, back_l, front_l)
-semi_circle(ortho_vect1, ortho_vect2)
+#semi_circle(ortho_vect1)
