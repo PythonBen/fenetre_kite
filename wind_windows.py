@@ -41,8 +41,8 @@ def back_limit(boat_vector):
     normv = np.linalg.norm(boat_vector)
     #normva = np.linalg.norm(apparent_wind)
     v  = np.array([boat_vector[1], -boat_vector[0]]) * constant_radius / normv
-    
     return v
+
 def plotting(real_wind, boat_vector, ortho1, ortho2, mx, my, back_l, front_l):
 
     xmin, xmax = -20, 20
@@ -69,11 +69,14 @@ def plotting(real_wind, boat_vector, ortho1, ortho2, mx, my, back_l, front_l):
     plt.show()
 
 real_wind = vectors(270,10)
+print("vent reel")
 print(real_wind)
 boat_vector = vectors(45, 10)
-print(boat_vector)
+print("vent vitesse")
+print(-boat_vector)
 
 app_wind = apparent_wind(real_wind, boat_vector)
+print("vent apparent")
 print(app_wind)
 ortho_vect1, ortho_vect2 = perpendicular_vectors(app_wind)
 print(ortho_vect1)
