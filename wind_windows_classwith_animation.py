@@ -56,6 +56,40 @@ class Windcalc:
         return v
 
 
+# for animation
+
+def update(frame, real_wind, boat_vector, ax):
+    trajectory = frame - 45
+    boat_vector = Windcalc.polar_to_cartesian(trajectory, np.linalg.norm(boat_vector))
+    app_wind = real_wind - boat_vector
+    #ortho1, ortho2 = Windcalc.perpendicular_vectors(app_wind)
+    ortho1, ortho2 = Windcalc.perpendicular_vectors(Windcalc(real_wind, boat_vector), app_wind)
+    mx, my = Windcalc.semi_circle(ortho1)
+    back_l = Windcalc.back_limit(Windcalc(real_wind=real_wind, boat_vector=boat_vector))
+    front_l = Windcalc.front_limit(Windcalc(real_wind=real_wind, boat_vector=boat_vector), ortho1, ortho2)
+    
+    ax.clear()
+    ax.quiver(0, 0, real_wind[0], real_wind[1], angles='xy', scale_units='xy', scale=1, color='blue', label="real wind")
+    ax.quiver(0, 0, boat_vector[0], boat_vector[1], angles='xy', scale_units='xy', scale=1, color='black', label="trajectory")
+    ax.quiver(0, 0, -boat_vector[0], -boat_vector[1], angles='xy', scale_units='xy', scale=1, color='green', label="velocity wind")
+    ax.quiver(0, 0, app_wind[0], app_wind[1], angles='xy', scale_units='xy', scale=1, color='red', label="apparent wind")
+    ax.quiver(0, 0, ortho1[0], ortho1[1], angles='xy', scale_units='xy', scale=1, color='pink')
+    ax.quiver(0, 0, ortho2[0], ortho2[1], angles='xy', scale_units='xy', scale=1, color='pink')
+    ax.plot(mx, my, 'gray')
+    ax.quiver(0, 0, back_l[0], back_l[1], angles='xy', scale_units='xy', scale=1, color='purple', label="kite window")
+    ax.quiver(0, 0, front_l[0], front_l[1], angles='xy', scale_units='xy', scale=1, color='purple')
+    ax.set_xlim(-30, 30)
+    ax.set_ylim(-30, 30)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_title('Fenêtre de vol')
+    ax.legend()
+    ax.grid(True)
+    ax.set_aspect('equal', adjustable='box')
+
+
+
+
 @dataclass
 class Drawing:
     real_wind: np.ndarray
@@ -137,7 +171,7 @@ def index():
     return Titled("Calcul de la fenêtre de vol d'un kite",
         Div(first_form, cls="form-container"),
         P(A('Plus d\'info', href='/info')),
-        P("Animation de la fenêtre de vol", A(' ici', href='/animation')),
+        P("Animation de la fenêtre de vol", A('ici', href='/animation')),
         )
     
 @rt("/submit_form")
@@ -176,13 +210,24 @@ def submit(real_wind_speed: float, trajectory: float, rider_speed: float):
          P(A('Retour', href='/')))
 
 @rt("/animation")
-def animation_plot():
+def animation_route():
+    real_wind_angle = 270
+    real_wind_speed = 10  # Example value
+    trajectory = 0  # Initial trajectory
+    rider_speed = 10  # Example value
     
-    return Titled("Animation pour trajectoire de -45° à 45°", 
-        Div(P("C'est à dire du large au près en passant par le travers"),
-        Iframe(src='/static/animation.html', width="800", height="800"),
+    real_wind = Windcalc.polar_to_cartesian(real_wind_angle, real_wind_speed)
+    boat_vector = Windcalc.polar_to_cartesian(trajectory, rider_speed)
+    
+    fig, ax = plt.subplots()
+    
+    ani = animation.FuncAnimation(fig, update, frames=np.arange(0, 91), fargs=(real_wind, boat_vector, ax), interval=100, blit=False)
+    writer = HTMLWriter(fps=10)
+    ani.save('/home/lepers/code/fenetre_kite/static/animation.html', writer=writer)
+     
+    return Div(
+        Iframe(src='/static/animation.html', width="800", height="600"),
         P(A('Retour', href='/'))
-        )
     )
 
 serve()
