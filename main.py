@@ -7,6 +7,7 @@ from fasthtml.common import *
 import decimal
 from decimal import Decimal
 from fh_matplotlib import matplotlib2fasthtml
+from fasthtml_hf import setup_hf_backup
 
 @dataclass
 class Windcalc:
@@ -184,5 +185,5 @@ def animation_plot():
         P(A('Retour', href='/'))
         )
     )
-
+setup_hf_backup(app)
 serve()
