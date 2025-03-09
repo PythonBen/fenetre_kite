@@ -10,7 +10,7 @@ from fh_matplotlib import matplotlib2fasthtml
 class Windcalc:
     real_wind: np.ndarray
     boat_vector: np.ndarray
-    constant_radius: int = 20
+    constant_radius: int = 25
 
     @property
     def apparent_wind(self):
@@ -48,11 +48,9 @@ class Windcalc:
     def front_limit(self, ortho_vect1, ortho_vect2):
         " defini par le bord de fenetre de vol"
         if self.boat_vector[0] > 0:
-            v = ortho_vect2 * 20 / np.linalg.norm(ortho_vect2)
-            #v = self.perpendicular_vectors()[1] * self.constant_radius
+            v = ortho_vect2 * self.constant_radius / np.linalg.norm(ortho_vect2)
         elif self.boat_vector[0] < 0:
-            v = ortho_vect1 * 20 / np.linalg.norm(ortho_vect1)
-            #self.perpendicular_vectors()[1] * self.constant_radius
+            v = ortho_vect1 * self.constant_radius / np.linalg.norm(ortho_vect1)
         return v
 
 @dataclass
@@ -102,7 +100,7 @@ def info():
     s3 = " Le vent réel est toujours le vent venant du Nord (haut de la fenetre), cela simplifie le calcul"
     s4 = " Une fois determiné le vent apparent, on trace la perpendiculaire à ce vent apparent et le demi cercle associé"
     s5 = " On trace ensuite deux autres vecteurs, la limite basse de la fenêtre de vol et le bord de la fenetre de vol"
-    s6 = " Le secteur entre ces deux lignes est appelé la fenetre de vol utile (en violet sur la figure)"
+    s6 = " Le secteur entre ces deux lignes est appelé la fenêtre de vol utile (en violet sur la figure)"
     s7 = " Pour plus d'information, voir le code source à mon adresse github"
     
     return (
@@ -128,7 +126,7 @@ def index():
     first_form = Form(method="post", action="/submit_form")(
     Fieldset(
         Label('Vent réel, vient du Nord (haut du la fenêtre)', Input(name='real_wind_speed',placeholder="En noeuds ou km/h, par défault vent du Nord",type="number",step="1",min="0",required=True)),
-        Label('Trajectoire', Input(name='trajectory',placeholder="En °, par exemple 45° est la direction NE",type="number",step="5",min="0",required=True,default="45")),
+        Label('Trajectoire', Input(name='trajectory',placeholder="En °, par exemple 45° est la direction NE",type="number",step="1",min="0",required=True,default="45")),
         Label('Vitesse du rider', Input(name='rider_speed',placeholder="Vitesse en noeuds ou km/h du rider",type="number",step="1",min="1",required=True)),
             ),
         Button("Entrez le vent réel, la direction et vitesse du rider", type="submit")
@@ -167,7 +165,7 @@ def submit(real_wind_speed: float, trajectory: float, rider_speed: float):
        
     except Exception as e:
         return Div(P("Error"), P(str(e)))
-    #return Div(P("Success"))
+    
     return Div(
         Drawing_instance.plotting(),
          P(A('Retour', href='/')))
