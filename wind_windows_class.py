@@ -100,7 +100,7 @@ app, rt = fast_app()
 def info():
     s1 = " Pour dessiner la fenêtre de vol on a utilisé du code python, la librairie fasthtml et matplotlib"
     s2 = " L'utilisateur doit entrer la vitesse du vent réel, la direction de la trajectoire et la vitesse du rider"
-    s3 = " Le vent réel est toujours le vent venant du Nord (haut de la fenetre), cela simplifie le calcul"
+    s3 = " Le vent réel est toujours le vent venant du Nord (haut de la fenêtre), cela simplifie le calcul"
     s4 = " Une fois determiné le vent apparent, on trace la perpendiculaire à ce vent apparent et le demi cercle associé"
     s5 = " On trace ensuite deux autres vecteurs, la limite basse de la fenêtre de vol et le bord de la fenetre de vol"
     s6 = " Le secteur entre ces deux lignes est appelé la fenêtre de vol utile (en violet sur la figure)"
